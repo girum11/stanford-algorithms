@@ -1,11 +1,12 @@
 package io.girum.stanford.week1.inversions;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public class CountInversions {
 
-    protected static int countInversions(int[] array) {
-        return countInversions(new Array(array, 0)).getInversions();
+    protected static BigInteger countInversions(int[] array) {
+        return countInversions(new Array(array, BigInteger.ZERO)).getInversions();
     }
 
     protected static Array countInversions(Array array) {
@@ -15,8 +16,9 @@ public class CountInversions {
             return array;
         }
 
-        Array leftHalf = countInversions(new Array(Arrays.copyOfRange(data, 0, data.length / 2), 0));
-        Array rightHalf = countInversions(new Array(Arrays.copyOfRange(data, data.length / 2, data.length), 0));
+        Array leftHalf = countInversions(new Array(Arrays.copyOfRange(data, 0, data.length / 2), BigInteger.ZERO));
+        Array rightHalf = countInversions(new Array(Arrays.copyOfRange(data, data.length / 2, data.length),
+                BigInteger.ZERO));
 
         return merge(leftHalf, rightHalf);
     }
@@ -26,7 +28,7 @@ public class CountInversions {
 
         int i = 0, j = 0, k = 0;
         int[] merged = new int[left.length + right.length];
-        int inversions = leftArray.getInversions() + rightArray.getInversions();
+        BigInteger inversions = leftArray.getInversions().add(rightArray.getInversions());
 
         // Merge the two arrays.
         while (i < left.length && j < right.length) {
@@ -36,7 +38,7 @@ public class CountInversions {
             } else {
                 merged[k] = right[j];
                 j++;
-                inversions += (left.length - i);
+                inversions = inversions.add(BigInteger.valueOf(left.length - i));
             }
 
             k++;

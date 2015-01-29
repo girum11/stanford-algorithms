@@ -1,14 +1,16 @@
 package io.girum.stanford.week1.inversions;
 
+import java.math.BigInteger;
+
 /**
  * Created by Girum Ibssa.
  */
 public class Array {
 
     private int[] data;
-    private int inversions;
+    private BigInteger inversions;
 
-    public Array(int[] data, int inversions) {
+    public Array(int[] data, BigInteger inversions) {
         this.data = data;
         this.inversions = inversions;
     }
@@ -21,11 +23,11 @@ public class Array {
         this.data = data;
     }
 
-    public int getInversions() {
+    public BigInteger getInversions() {
         return inversions;
     }
 
-    public void setInversions(int inversions) {
+    public void setInversions(BigInteger inversions) {
         this.inversions = inversions;
     }
 }
