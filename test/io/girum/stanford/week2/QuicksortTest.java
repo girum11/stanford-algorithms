@@ -3,6 +3,10 @@ package io.girum.stanford.week2;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import static org.testng.Assert.*;
 
 public class QuicksortTest {
@@ -56,5 +60,22 @@ public class QuicksortTest {
         Quicksort.swap(actual, 0, 1);
 
         assertEquals(actual, expected, print(actual) + " || " + print(expected));
+    }
+
+    @Test
+    public void testStanford() throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(new File("resources/week2/QuickSort.txt")));
+        int[] giantArray = new int[10000];
+        int i = 0;
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            giantArray[i] = Integer.parseInt(line);
+            i++;
+        }
+        reader.close();
+
+        assertNotNull(giantArray);
+        System.out.print("Performed " + Quicksort.quicksort(giantArray) + " comparisons");
     }
 }
