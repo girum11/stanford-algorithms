@@ -1,8 +1,6 @@
 package io.girum.stanford.week3.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Undirected graph represented by an adjacency list
@@ -12,8 +10,9 @@ import java.util.Random;
 public class UndirectedGraph {
 
     protected List<List<Integer>> adjacencies;
-    protected List<List<Integer>> contracted;
+    protected List<Set<Integer>> vertexSets;
     protected int size;
+
 
     public UndirectedGraph(int size) {
 
@@ -21,10 +20,16 @@ public class UndirectedGraph {
 
         // Initialize the adjacency list.
         adjacencies = new ArrayList<List<Integer>>(size + 1);
-        contracted = new ArrayList<List<Integer>>(size + 1);
+        vertexSets = new ArrayList<Set<Integer>>(size + 1);
         for (int i = 0; i <= size; i++) {
             adjacencies.add(new ArrayList<Integer>());
-            contracted.add(new ArrayList<Integer>());
+
+            // Create a Vertex Set that contains only this node, at first.
+            Set<Integer> set = new HashSet<Integer>();
+            if (i != 0) {
+                set.add(i);
+            }
+            vertexSets.add(set);
         }
 
     }
@@ -72,45 +77,42 @@ public class UndirectedGraph {
     public void contract(int v1, int v2) {
         List<Integer> merged = new ArrayList<Integer>();
 
-        // Mark v1 as being contracted with v2 and vice versa.
-        contracted.get(v1).add(v2);
-        contracted.get(v2).add(v1);
+        // First, merge the two Vertex Sets together.
+        Set<Integer> mergedVertexSet = new HashSet<Integer>();
+        mergedVertexSet.addAll(vertexSets.get(v1));
+        mergedVertexSet.addAll(vertexSets.get(v2));
 
-        // Add all of v1's adjacencies into the merged list. Puts loops in for now.
-        for (Integer v1Adjacency : adjacencies.get(v1)) {
-            merged.add(v1Adjacency);
+        // Then apply that merged Vertex Set to all vertices belonging to that set.
+        for (Integer mergedVertex : mergedVertexSet) {
+            vertexSets.set(mergedVertex, mergedVertexSet);
         }
 
-        // Add all of v2's adjacencies into the merged list too.
-        for (Integer v2Adjacency : adjacencies.get(v2)) {
-            merged.add(v2Adjacency);
+        // Now actually merge v1 and v2. No self-loops.
+        for (Integer vertex : adjacencies.get(v1)) {
+            if (!mergedVertexSet.contains(vertex)) {
+                merged.add(vertex);
+            }
+        }
+        for (Integer vertex : adjacencies.get(v2)) {
+            if (!mergedVertexSet.contains(vertex)) {
+                merged.add(vertex);
+            }
         }
 
-        // Yank all of those "contracted" nodes from the merged list
-        // (aka remove loops).
-        merged.removeAll(contracted.get(v1));
-        merged.removeAll(contracted.get(v2));
-
-        // Set the existing adjacency lists for v1 and v2 to both be the new, merged list.
-        adjacencies.set(v1, merged);
-        adjacencies.set(v2, merged);
-
-        // Set the other contracted vertices in the set to have the new merged list.
-        for (Integer contracted : this.contracted.get(v1)) {
-            adjacencies.set(contracted, merged);
-        }
-        for (Integer contracted : this.contracted.get(v2)) {
-            adjacencies.set(contracted, merged);
+        // Lastly, set all of the vertices in the Vertex Set to have the merged
+        // adjacency list.
+        for (Integer mergedVertex : mergedVertexSet) {
+            adjacencies.set(mergedVertex, merged);
         }
 
-        // Decrement the size of the graph when you're done.
+        // Decrement the size of the whole graph when you're done.
         size--;
     }
 
     protected UndirectedGraph copy() {
         UndirectedGraph clone = new UndirectedGraph(size);
         clone.adjacencies = new ArrayList<List<Integer>>(this.adjacencies);
-        clone.contracted = new ArrayList<List<Integer>>(this.contracted);
+        clone.vertexSets = new ArrayList<Set<Integer>>(this.vertexSets);
         clone.size = this.size;
 
         return clone;
