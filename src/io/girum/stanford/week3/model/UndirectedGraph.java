@@ -22,10 +22,10 @@ public class UndirectedGraph {
         adjacencies = new ArrayList<List<Integer>>(size + 1);
         vertexSets = new ArrayList<Set<Integer>>(size + 1);
         for (int i = 0; i <= size; i++) {
-            adjacencies.add(new ArrayList<Integer>());
+            adjacencies.add(new LinkedList<Integer>());
 
             // Create a Vertex Set that contains only this node, at first.
-            Set<Integer> set = new HashSet<Integer>();
+            Set<Integer> set = new HashSet<Integer>(size);
             if (i != 0) {
                 set.add(i);
             }
@@ -42,9 +42,14 @@ public class UndirectedGraph {
 
         int minCutSoFar = Integer.MAX_VALUE;
 
+        Random random = new Random();
+
         // Repeatedly run the random contraction algorithm N^2 times.
         for (int i = 0; i < size * size; i++) {
-            int minCut = randomContraction();
+            random.setSeed(i);
+
+            List<Integer> cut = randomContraction(random);
+            int minCut = cut.size();
 
             // Remember the size of the "minimum" cut you've seen so far.
             if (minCut < minCutSoFar) {
@@ -55,16 +60,25 @@ public class UndirectedGraph {
         return minCutSoFar;
     }
 
-    protected int randomContraction() {
-        Random random = new Random();
-
+    protected List<Integer> randomContraction(Random random) {
         UndirectedGraph copy = this.copy();
 
         while (copy.size > 2) {
-            copy.contract(random.nextInt(size), random.nextInt(size));
+
+            // Randomly pick two vertices to merge together.
+            int random1 = random.nextInt(size);
+            int random2 = random.nextInt(size);
+
+            // Protect against picking random1 and random2 as the same value.
+            while (random2 == random1) {
+                random2 = random.nextInt(size);
+            }
+
+            // Merge the two vertices.
+            copy.contract(random1, random2);
         }
 
-        return copy.adjacencies.get(1).size();
+        return copy.adjacencies.get(1);
     }
 
     public int size() {
@@ -75,10 +89,10 @@ public class UndirectedGraph {
      * Collapses two vertices into one "supervertex". Assume v1 is the "winner" node.
      */
     public void contract(int v1, int v2) {
-        List<Integer> merged = new ArrayList<Integer>();
+        List<Integer> merged = new LinkedList<Integer>();
 
         // First, merge the two Vertex Sets together.
-        Set<Integer> mergedVertexSet = new HashSet<Integer>();
+        Set<Integer> mergedVertexSet = new HashSet<Integer>(vertexSets.get(v1).size() + vertexSets.get(v2).size());
         mergedVertexSet.addAll(vertexSets.get(v1));
         mergedVertexSet.addAll(vertexSets.get(v2));
 

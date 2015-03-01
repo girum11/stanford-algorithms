@@ -62,7 +62,7 @@ public class MinCutTest {
         graph.addAdjacency(5, 4);
         graph.addAdjacency(5, 3);
 
-        assertEquals(graph.getMinCut(), 3);
+        assertEquals(graph.getMinCut(), 2);
     }
 
     @Test
