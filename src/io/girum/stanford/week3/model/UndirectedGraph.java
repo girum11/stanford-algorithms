@@ -66,12 +66,13 @@ public class UndirectedGraph {
         while (copy.size > 2) {
 
             // Randomly pick two vertices to merge together.
-            int random1 = random.nextInt(size);
-            int random2 = random.nextInt(size);
+            int random1 = random.nextInt(size) + 1;
+            int random2 = random.nextInt(size) + 1;
 
             // Protect against picking random1 and random2 as the same value.
-            while (random2 == random1) {
-                random2 = random.nextInt(size);
+            // Also protect against trying to merge two vertices that are already merged.
+            while (random2 == random1 || copy.vertexSets.get(random1).contains(random2)) {
+                random2 = random.nextInt(size) + 1;
             }
 
             // Merge the two vertices.

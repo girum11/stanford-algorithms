@@ -43,8 +43,7 @@ public class MinCutTest {
         assertEquals(graph.size(), 2);
     }
 
-    @Test
-    public void testMinCut() throws Exception {
+    private UndirectedGraph createGraph() {
         UndirectedGraph graph = new UndirectedGraph(5);
 
         graph.addAdjacency(1, 2);
@@ -62,7 +61,25 @@ public class MinCutTest {
         graph.addAdjacency(5, 4);
         graph.addAdjacency(5, 3);
 
+        return graph;
+    }
+
+    @Test
+    public void testMinCut() throws Exception {
+        UndirectedGraph graph = createGraph();
+
         assertEquals(graph.getMinCut(), 2);
+    }
+
+    @Test
+    public void testActuallyMinimumCut() throws Exception {
+        UndirectedGraph graph = createGraph();
+
+        graph.contract(1, 5);
+        graph.contract(1, 4);
+        graph.contract(1, 3);
+
+        assertEquals(graph.size(), 3);
     }
 
     @Test
